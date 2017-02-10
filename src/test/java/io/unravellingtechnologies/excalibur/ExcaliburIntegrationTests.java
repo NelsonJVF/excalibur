@@ -140,10 +140,10 @@ public class ExcaliburIntegrationTests {
     }
 
     /**
-     * Tests filtering a column by one value.
+     * Tests filtering a column by multiple values.
      */
     @Test
-    public void testFilterColumnMultipleFilters() {
+    public void testFilterColumnMultipleFiltersMatch() {
         final Sheet sheetB = excaliburInst.getSheet("Sheet2");
 
         Map<String, List<String>> filters = new HashMap<>();
@@ -154,12 +154,61 @@ public class ExcaliburIntegrationTests {
 
         filters.put("ColumnD", filter);
 
-        filter = new LinkedList<>();
-        filter.add("oje");
+        //filter.clear();
+        List<String> filter2 = new LinkedList<>();
+        filter2.add("oje");
 
-        filters.put("ColumnB", filter);
+        filters.put("ColumnB", filter2);
 
         assertEquals("Number of filtered rows do not match expected!",
-            1, sheetB.getRowsWhere(filters).size());
+            1, sheetB.getRowsWhere(filters, "AND").size());
+    }
+
+    /**
+     * Tests filtering a column by multiple values.
+     */
+    @Test
+    public void testFilterMultipleColumnMatchAll() {
+        final Sheet sheetB = excaliburInst.getSheet("Sheet2");
+
+        Map<String, List<String>> filters = new HashMap<>();
+
+        List<String> filter = new LinkedList<>();
+        filter.add("bazinga");
+        filter.add("bingo");
+
+        filters.put("ColumnD", filter);
+
+        List<String> filter2 = new LinkedList<>();
+        filter2.add("oje");
+
+        filters.put("ColumnB", filter2);
+
+        assertEquals("Number of filtered rows do not match expected!",
+            1, sheetB.getRowsWhere(filters, "AND").size());
+    }
+
+    /**
+     * Tests filtering a column by multiple values.
+     */
+    @Test
+    public void testFilterMultipleColumnMatchAtleastOne() {
+        final Sheet sheetB = excaliburInst.getSheet("Sheet2");
+
+        Map<String, List<String>> filters = new HashMap<>();
+
+        List<String> filter = new LinkedList<>();
+        filter.add("bazinga");
+        filter.add("bingo");
+
+        filters.put("ColumnD", filter);
+
+        List<String> filter2 = new LinkedList<>();
+        filter2.add("oje");
+
+        filters.put("ColumnB", filter2);
+
+        assertEquals("Number of filtered rows do not match expected!",
+            4, sheetB.getRowsWhere(filters, "OR").size());
     }
 }

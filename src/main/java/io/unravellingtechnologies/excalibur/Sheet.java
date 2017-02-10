@@ -218,21 +218,33 @@ class Sheet {
    * column names can be specified (key of the Map), and for each a list
    * of values to match can be supplied (value of the Map).
    * @param filters Map with the filter to be matched.
+   * @param operator Type of operator to Where clause 'AND' or 'OR'
    * @return List of matched rows.
    */
-  public List<Row> getRowsWhere(Map<String, List<String>> filters) {
+  public List<Row> getRowsWhere(Map<String, List<String>> filters, String operator) {
     if (filters == null || filters.isEmpty()) {
       return rows;
     }
     
     List<Row> filteredRows = new ArrayList<Row>();
+    List<Boolean> controlVar = new ArrayList<Boolean>();
 
     for (Row row: this.rows) {
       for (Entry<String, List<String>> entry : filters.entrySet()) {
-        if (entry.getValue().contains(row.getCell(entry.getKey()))) {
-          filteredRows.add(row);
-        }
+        if (entry.getValue().contains(row.getCell(entry.getKey())))
+          controlVar.add(true);
+        else
+          controlVar.add(false);
       }
+
+      if(operator == "AND" && !controlVar.contains(false))
+        filteredRows.add(row);
+      else if(operator == "OR" && controlVar.contains(true))
+        filteredRows.add(row);
+      else if(operator != "AND" && operator != "OR")
+        logger.error("Invalid operator ! The possible values are 'AND' or 'OR'.");
+
+      controlVar.clear();
     }
 
     return filteredRows;
